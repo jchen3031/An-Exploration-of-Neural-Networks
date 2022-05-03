@@ -64,6 +64,15 @@ class DataSet(object):
     def plot(self,index):
         img = self.X[index]
         plt.imshow(img)
+    def plot_axes(self,n):
+        fig,axes = plt.subplots(2,n,figsize = (20,5))
+        for i in range(n):
+            axes[0,i].imshow(self.X[i])
+            axes[0,i].axis('off')
+            img = cv2.resize(self.X[i],(28,28))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            axes[1,i].imshow(img)
+            axes[1,i].axis('off')
     def save_model(self, name = 'model'):
         path = 'Model/'+name+'.h5'
         self.model.save(path)
@@ -197,7 +206,7 @@ class DataSet(object):
         prediction = np.argmax(predictions, axis=1)
         plt.figure(figsize=(7, 7))
         img = X[0]
-        print(np.amax(img),np.amin(img))
+        #print(np.amax(img),np.amin(img))
         for i, (image, label) in enumerate(zip(X[:15],Y[:15])):
             plt.subplot(3, 5, i + 1)
             plt.axis('off')
@@ -241,7 +250,7 @@ class DataSet(object):
         return x_train,y_train,x_test,y_test
     def classes(self,x):
         return str(x)
-    def plot_accuary(self):
+    def plot_accuary(self, NN = None):
         accuary = []
         label = ['LDA','QDA','KNN','RandomForest','svm']
         accuary.append(self.LDA())
@@ -249,10 +258,13 @@ class DataSet(object):
         accuary.append(self.KNN(n_neighbors = 10))
         accuary.append(self.RandomForest(n_estimators = 100))
         accuary.append(self.svm(c = 10))
+        if NN != None:
+            accuary.append(NN)
+            label.append('CNN')
         accuary = np.array(accuary)*100
         plt.bar(label, accuary)
         for a,b in zip(label,accuary): 
-            plt.text(a, b+0.05, '%.2f ' % b, ha='center', va= 'bottom',fontsize=11) 
+            plt.text(a, b+0.05, '%.2f ' % b, ha='center', va= 'bottom',fontsize=11)
 class NumsDataset(DataSet):
     def __init__(self,batch = 64,dsize = 28, loadfile = None):
         super(NumsDataset,self).__init__(batch,dsize,loadfile)
@@ -365,14 +377,14 @@ class CharsDataset(DataSet):
             return chr(x+61)
 class FlowerDataset(DataSet):
     def __init__(self,batch = 64,dsize = 64,loadfile = None):#/drive/MyDrive
-        super(FlowerDataset,self).__init__(batch,loadfile)
+        super(FlowerDataset,self).__init__(batch,dsize,loadfile)
     def _parse_image_function(self,example):
         train_feature_description = {
             'class': tf.io.FixedLenFeature([], tf.int64),
             'image': tf.io.FixedLenFeature([], tf.string),
         }
         return tf.io.parse_single_example(example, train_feature_description)
-    def data(self,batch):
+    def data(self,batch,dsize = 64):
         self.train_files = glob.glob('flowerdataset/tfrecords-jpeg-192x192/train/*.tfrec')
         self.val_files = glob.glob('flowerdataset/tfrecords-jpeg-192x192/val/*.tfrec')
         self.test_files = glob.glob('flowerdataset/tfrecords-jpeg-192x192/test/*.tfrec')
@@ -385,7 +397,7 @@ class FlowerDataset(DataSet):
             train_image_dataset = train_image_dataset.map(self._parse_image_function)
             classes = [int(class_features['class']) for class_features in train_image_dataset]
             train_class += classes
-            images = [self.numpy(image_features['image'].numpy()) for image_features in train_image_dataset]
+            images = [self.numpy(image_features['image'].numpy(),dsize = dsize) for image_features in train_image_dataset]
             train_images.append(np.stack(images))
             
         train_images = np.concatenate(train_images)
@@ -401,7 +413,7 @@ class FlowerDataset(DataSet):
             train_image_dataset = train_image_dataset.map(self._parse_image_function)
             classes = [int(class_features['class']) for class_features in train_image_dataset]
             val_classes += classes
-            images = [self.numpy(image_features['image'].numpy(dsize=dsize)) for image_features in train_image_dataset]
+            images = [self.numpy(image_features['image'].numpy(),dsize=dsize) for image_features in train_image_dataset]
             val_img.append(np.stack(images))
         val_img = np.concatenate(val_img)
         val_classes = np.array(val_classes)
@@ -414,7 +426,7 @@ class FlowerDataset(DataSet):
         self.input_shape = self.x_train[0].shape
         if len(self.input_shape) == 2:
             self.input_shape = (self.input_shape[0],self.input_shape[1],1)
-        self.model = model.CustNN(input_shape=self.input_shape, classes=104)
+        self.model = model.baseCNN(input_shape=self.input_shape, classes=104)
         train_dataset = tf.data.Dataset.from_tensor_slices((self.x_train, self.y_train))
         self.train_dataset = train_dataset.shuffle(buffer_size=1024).batch(batch)
         self.x_test = val_img

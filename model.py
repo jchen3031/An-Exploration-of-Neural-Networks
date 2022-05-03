@@ -170,9 +170,9 @@ def AlexNet(input_shape, classes):
     
     model.add(layers.Flatten())
     model.add(layers.Dense(1024, activation= 'relu'))
-    model.add(layers.Dropout(0.7))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Dense(512, activation= 'relu'))
-    model.add(layers.Dropout(0.7))
+    model.add(layers.Dropout(0.5))
     model.add(layers.Dense(classes, activation= 'softmax'))
     
     model.compile(loss='categorical_crossentropy',
