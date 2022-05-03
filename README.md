@@ -1,6 +1,6 @@
 # 4803Project
 How to use the code<br>
-DataSet.py <br>
+### DataSet.py
 There are three different DataSets are NumsDataset, CharsDataset, FlowerDataset. 
 DataSet(batch=64,dsize=64,loadfile=None)<br>
 # Parameters:
@@ -49,3 +49,7 @@ show() plot the image with predicted label and expected label by choose model<br
 showNN() plot the image with predicted label and expected label by neural network<br>
 classes(x) return the mapping of x, such as classes(10) = 'A' in chars dataset<br>
 plot_accuary(NN = None): plot the bar to compare the accuary of 'LDA','QDA','KNN','RandomForest','svm' model
+
+### model.py
+This file includes the neural networks<br>
+vgg13,vgg15,vgg19,baseCNN,AlexNet_c,AlexNet,DenseNet121 and MultLayer
