@@ -53,3 +53,9 @@ plot_accuary(NN = None): plot the bar to compare the accuary of 'LDA','QDA','KNN
 ### model.py
 This file includes the neural networks<br>
 vgg13,vgg15,vgg19,baseCNN,AlexNet_c,AlexNet,DenseNet121 and MultLayer
+
+### Dataset link
+numbers dataset: http://yann.lecun.com/exdb/mnist/<br>
+chars74 dataset: http://www.ee.surrey.ac.uk/CVSSP/demos/chars74k/ EnglishImg.tgz file<br>
+Flower dataset: https://www.kaggle.com/competitions/tpu-getting-started/data 192x192
+
