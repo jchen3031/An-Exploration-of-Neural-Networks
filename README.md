@@ -1,4 +1,5 @@
 # 4803Project
+![image](main/poster.png)
 How to use the code<br>
 ### DataSet.py
 There are three different DataSets are NumsDataset, CharsDataset, FlowerDataset. 
